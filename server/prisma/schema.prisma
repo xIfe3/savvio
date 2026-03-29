@@ -1,0 +1,168 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                Int                @id @default(autoincrement())
+  email             String             @unique
+  password          String
+  name              String
+  currency          String             @default("NGN")
+  locale            String             @default("en-NG")
+  createdAt         DateTime           @default(now())
+  expenses          Expense[]
+  categories        Category[]
+  budgets           Budget[]
+  incomes           Income[]
+  recurringExpenses RecurringExpense[]
+  savingsGoals      SavingsGoal[]
+  notifications     Notification[]
+  tags              Tag[]
+}
+
+model Category {
+  id                Int                @id @default(autoincrement())
+  name              String
+  color             String
+  icon              String             @default("tag")
+  userId            Int?
+  user              User?              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt         DateTime           @default(now())
+  expenses          Expense[]
+  budgets           Budget[]
+  incomes           Income[]
+  recurringExpenses RecurringExpense[]
+  savingsGoals      SavingsGoal[]
+
+  @@unique([name, userId])
+}
+
+model Expense {
+  id          Int            @id @default(autoincrement())
+  amount      Float
+  description String
+  notes       String         @default("")
+  date        DateTime
+  receiptUrl  String         @default("")
+  categoryId  Int
+  category    Category       @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  userId      Int
+  user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  splits      ExpenseSplit[]
+  expenseTags ExpenseTag[]
+}
+
+model ExpenseSplit {
+  id         Int      @id @default(autoincrement())
+  expenseId  Int
+  expense    Expense  @relation(fields: [expenseId], references: [id], onDelete: Cascade)
+  label      String
+  amount     Float
+  createdAt  DateTime @default(now())
+}
+
+model Tag {
+  id          Int          @id @default(autoincrement())
+  name        String
+  color       String       @default("#64748b")
+  userId      Int
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expenseTags ExpenseTag[]
+  createdAt   DateTime     @default(now())
+
+  @@unique([name, userId])
+}
+
+model ExpenseTag {
+  id        Int     @id @default(autoincrement())
+  expenseId Int
+  expense   Expense @relation(fields: [expenseId], references: [id], onDelete: Cascade)
+  tagId     Int
+  tag       Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([expenseId, tagId])
+}
+
+model Budget {
+  id            Int            @id @default(autoincrement())
+  amount        Float
+  month         String
+  alertAt80     Boolean        @default(true)
+  alertAt100    Boolean        @default(true)
+  categoryId    Int
+  category      Category       @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  userId        Int
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt     DateTime       @default(now())
+  notifications Notification[]
+
+  @@unique([month, categoryId, userId])
+}
+
+model Income {
+  id          Int      @id @default(autoincrement())
+  amount      Float
+  source      String
+  description String   @default("")
+  date        DateTime
+  isRecurring Boolean  @default(false)
+  frequency   String   @default("")
+  categoryId  Int?
+  category    Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model RecurringExpense {
+  id          Int      @id @default(autoincrement())
+  amount      Float
+  description String
+  frequency   String   // daily, weekly, monthly, yearly
+  startDate   DateTime
+  endDate     DateTime?
+  nextDueDate DateTime
+  isActive    Boolean  @default(true)
+  categoryId  Int
+  category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model SavingsGoal {
+  id            Int      @id @default(autoincrement())
+  name          String
+  targetAmount  Float
+  currentAmount Float    @default(0)
+  deadline      DateTime?
+  color         String   @default("#3b82f6")
+  categoryId    Int?
+  category      Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  userId        Int
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  type      String   // budget_warning, budget_exceeded, goal_reached, recurring_due
+  title     String
+  message   String
+  read      Boolean  @default(false)
+  budgetId  Int?
+  budget    Budget?  @relation(fields: [budgetId], references: [id], onDelete: Cascade)
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}

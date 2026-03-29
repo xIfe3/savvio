@@ -1,0 +1,8 @@
+.env
+.vscode/
+node_modules
+prisma/migrations
+dev.db
+.next
+dist
+*.tsbuildinfo
