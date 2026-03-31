@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:3005";
+const API_URL = "https://savvio.onrender.com";
 
 async function fetchApi(endpoint: string, options: RequestInit = {}) {
   const token =
@@ -48,10 +48,18 @@ export const auth = {
   login: (data: { email: string; password: string }) =>
     fetchApi("/auth/login", { method: "POST", body: JSON.stringify(data) }),
   profile: () => fetchApi("/auth/profile"),
-  updateProfile: (data: { name?: string; email?: string; currency?: string; locale?: string }) =>
+  updateProfile: (data: {
+    name?: string;
+    email?: string;
+    currency?: string;
+    locale?: string;
+  }) =>
     fetchApi("/auth/profile", { method: "PATCH", body: JSON.stringify(data) }),
   changePassword: (data: { currentPassword: string; newPassword: string }) =>
-    fetchApi("/auth/change-password", { method: "POST", body: JSON.stringify(data) }),
+    fetchApi("/auth/change-password", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
 };
 
 // Categories
@@ -59,8 +67,14 @@ export const categories = {
   list: () => fetchApi("/categories"),
   create: (data: { name: string; color: string; icon?: string }) =>
     fetchApi("/categories", { method: "POST", body: JSON.stringify(data) }),
-  update: (id: number, data: { name?: string; color?: string; icon?: string }) =>
-    fetchApi(`/categories/${id}`, { method: "PATCH", body: JSON.stringify(data) }),
+  update: (
+    id: number,
+    data: { name?: string; color?: string; icon?: string },
+  ) =>
+    fetchApi(`/categories/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify(data),
+    }),
   delete: (id: number) => fetchApi(`/categories/${id}`, { method: "DELETE" }),
 };
 
@@ -82,7 +96,10 @@ export const expenses = {
     splits?: Array<{ label: string; amount: number }>;
   }) => fetchApi("/expenses", { method: "POST", body: JSON.stringify(data) }),
   update: (id: number, data: Record<string, unknown>) =>
-    fetchApi(`/expenses/${id}`, { method: "PATCH", body: JSON.stringify(data) }),
+    fetchApi(`/expenses/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify(data),
+    }),
   delete: (id: number) => fetchApi(`/expenses/${id}`, { method: "DELETE" }),
 };
 
@@ -130,10 +147,18 @@ export const recurringExpenses = {
     startDate: string;
     endDate?: string;
     categoryId: number;
-  }) => fetchApi("/recurring-expenses", { method: "POST", body: JSON.stringify(data) }),
+  }) =>
+    fetchApi("/recurring-expenses", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
   update: (id: number, data: Record<string, unknown>) =>
-    fetchApi(`/recurring-expenses/${id}`, { method: "PATCH", body: JSON.stringify(data) }),
-  delete: (id: number) => fetchApi(`/recurring-expenses/${id}`, { method: "DELETE" }),
+    fetchApi(`/recurring-expenses/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify(data),
+    }),
+  delete: (id: number) =>
+    fetchApi(`/recurring-expenses/${id}`, { method: "DELETE" }),
   process: () => fetchApi("/recurring-expenses/process"),
 };
 
@@ -147,12 +172,20 @@ export const savingsGoals = {
     deadline?: string;
     color?: string;
     categoryId?: number;
-  }) => fetchApi("/savings-goals", { method: "POST", body: JSON.stringify(data) }),
+  }) =>
+    fetchApi("/savings-goals", { method: "POST", body: JSON.stringify(data) }),
   update: (id: number, data: Record<string, unknown>) =>
-    fetchApi(`/savings-goals/${id}`, { method: "PATCH", body: JSON.stringify(data) }),
+    fetchApi(`/savings-goals/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify(data),
+    }),
   addFunds: (id: number, amount: number) =>
-    fetchApi(`/savings-goals/${id}/add-funds`, { method: "PATCH", body: JSON.stringify({ amount }) }),
-  delete: (id: number) => fetchApi(`/savings-goals/${id}`, { method: "DELETE" }),
+    fetchApi(`/savings-goals/${id}/add-funds`, {
+      method: "PATCH",
+      body: JSON.stringify({ amount }),
+    }),
+  delete: (id: number) =>
+    fetchApi(`/savings-goals/${id}`, { method: "DELETE" }),
 };
 
 // Notifications
@@ -162,8 +195,7 @@ export const notifications = {
   unreadCount: () => fetchApi("/notifications/unread-count"),
   markAsRead: (id: number) =>
     fetchApi(`/notifications/${id}/read`, { method: "PATCH" }),
-  markAllAsRead: () =>
-    fetchApi("/notifications/read-all", { method: "PATCH" }),
+  markAllAsRead: () => fetchApi("/notifications/read-all", { method: "PATCH" }),
   checkBudgets: (month: string) =>
     fetchApi(`/notifications/check-budgets?month=${month}`),
   delete: (id: number) =>
@@ -204,14 +236,19 @@ export const analytics = {
   weeklyPattern: (month: string) =>
     fetchApi(`/analytics/weekly-pattern?month=${month}`),
   incomeVsExpense: (months?: number) =>
-    fetchApi(`/analytics/income-vs-expense${months ? `?months=${months}` : ""}`),
+    fetchApi(
+      `/analytics/income-vs-expense${months ? `?months=${months}` : ""}`,
+    ),
   topExpenses: (month: string, limit?: number) =>
-    fetchApi(`/analytics/top-expenses?month=${month}${limit ? `&limit=${limit}` : ""}`),
+    fetchApi(
+      `/analytics/top-expenses?month=${month}${limit ? `&limit=${limit}` : ""}`,
+    ),
 };
 
 // Export
 export const exportApi = {
-  expensesCsv: (month: string) => fetchRaw(`/export/expenses/csv?month=${month}`),
+  expensesCsv: (month: string) =>
+    fetchRaw(`/export/expenses/csv?month=${month}`),
   incomeCsv: (month: string) => fetchRaw(`/export/income/csv?month=${month}`),
   report: (month: string) => fetchApi(`/export/report?month=${month}`),
 };
