@@ -6,7 +6,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.enableCors({
-    origin: ['http://localhost:3002', 'https://savvio-budgetting.vercel.app'],
+    origin: ['http://localhost:3000', 'https://savvio-budgetting.vercel.app'],
     credentials: true,
   });
 
