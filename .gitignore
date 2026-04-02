@@ -1,4 +1,6 @@
 .env
+.env.local
+.env.prod
 .vscode/
 node_modules
 prisma/migrations
